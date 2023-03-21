@@ -1,0 +1,324 @@
+﻿
+@{
+    ViewBag.Title = "ListCarView";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+@Scripts.Render("~/bundles/modernizr")
+
+<div class="row mt-5 pt-5 p-2">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="product-details mr-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="ml-2">Detalle Compra</span>
+                            <a class="btn btn-danger" href="@Url.Action("Index","Store")">Volver</a>
+                        </div>
+                        <hr class="mt-2 mb-2">
+                        <div class="justify-content-start mb-2">
+                            <span id="sinProducto"></span>  Tienes <span id="valorCarrito2" class="ml-1"></span> artículo(s) en tu Pedido
+                        </div>
+                        <div id="productos-seleccionados">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+
+                                <div class="col-12">
+                                    <div class="payment-info">
+                                        <form id="ProcesarPago">
+                                            @Html.AntiForgeryToken()
+
+                                            <hr class="line">
+                                            <div class="d-flex justify-content-between information"><span>Total a Pagar</span><span id="totalPagar">S/. 0</span></div>
+                                            <button class="btn btn-primary btn-block mt-3" id="btnProcesarPago" type="submit">Procesar Pago</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script>
+         $(document).ready(function () {
+
+             LlenarTabla();
+             obtenerValorParcial();
+             
+
+         });
+
+    function LlenarTabla() {
+
+        $.ajax({
+            url: "@Url.Content("~/Store/ListCar")",
+            type: "GET",
+            data: null,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+
+                if (response != null) {
+
+                    $.each(response, function (i, item) {
+
+                        $("<div>").addClass("card mb-2 card-producto").append(
+
+                            $("<div>").addClass("card-body").append(
+
+                                $("<div>").addClass("row").append(
+                                    $("<div>").addClass("col-1").append(
+                                        $("<img>").addClass("rounded").attr({ /*"src": "data:image/" + item.oProducto.extension + ";base64," + item.oProducto.base64, "width": "50" */})
+                                    ),
+                                    $("<div>").addClass("col-7").append(
+                                        $("<div>").addClass("ml-2").append(
+                                            $("<span>").addClass("font-weight-bold d-block").text(item.Caracteristica),
+                                            $("<span>").addClass("spec").text(item.Nombre),
+                                            $("<span>").addClass("float-end").text("Precio : S./" + item.ValorParcial)
+                                        )
+                                    ),
+                                    $("<div>").addClass("col-3").append(
+                                        $("<div>").addClass("d-flex justify-content-end controles").append(
+                                            $("<button>").addClass("btn btn-outline-secondary btn-restar rounded-0").append($("<i>").addClass("fas fa-minus")).attr({ "type": "button" }),
+                                            $("<input>").addClass("form-control input-cantidad p-1 text-center rounded-0").css({ "width": "40px" }).attr({ "disabled": "disabled" }).val(item.Cantidad).data("precio", item.Precio).data("idproducto", item.IdProducto),
+                                            $("<input hidden>").addClass("form-control input-idProducto p-1 text-center rounded-0").css({ "width": "40px" }).attr({ "disabled": "disabled" }).val(item.IdProducto),
+                                            $("<input hidden>").addClass("form-control input-idPedido p-1 text-center rounded-0").css({ "width": "40px" }).attr({ "disabled": "disabled" }).val(item.IdPedido),
+                                            $("<input hidden>").addClass("form-control input-idCantidad p-1 text-center rounded-0").css({ "width": "40px" }).attr({ "disabled": "disabled" }).val(item.Cantidad),
+                                            $("<button>").addClass("btn btn-outline-secondary btn-sumar rounded-0").append($("<i>").addClass("fas fa-plus")).attr({ "type": "button" })
+                                        )
+                                    ),
+                                    $("<div>").addClass("col-1").append(
+                                        $("<button onclick='EliminarPedidoParcial(" + item.IdPedido+")'>").addClass("btn btn-outline-danger btn-eliminar").append($("<i>").addClass("far fa-trash-alt")).data("informacion", { _IdPedido: item.IdPedido, _IdProducto: item.IdProducto }),
+                                    )
+                                )
+                            )
+                        ).appendTo("#productos-seleccionados");
+                    });
+
+                } else {
+                    console.log("El servidor no arrojó datos")
+                }
+
+
+
+            },
+            error: function () {
+                console.log("Error no se pudo hacer la solicitud")
+            }
+        });
+    }
+
+    $(document).on('click', '.btn-sumar', function (event) {
+        var div = $(this).parent("div.controles");
+        var input = $(div).find("input.input-cantidad");
+        var inputIdProducto = $(div).find("input.input-idProducto");
+        var inputIdPedido = $(div).find("input.input-idPedido");
+        var inputIdCantidad = $(div).find("input.input-idCantidad");
+        var cantidad = parseInt($(input).val()) + 1;
+        var cantidadLimite = parseInt($(inputIdCantidad).val())
+        if (cantidad <= cantidadLimite) {
+            $(input).val(cantidad);
+        }
+        
+
+        var idProducto = $(inputIdProducto).val();
+        var idPedido = $(inputIdPedido).val();
+
+        ActualizarPrecioParcial(idProducto, cantidad, idPedido);
+
+
+        obtenerValorParcial();
+    });
+
+    $(document).on('click', '.btn-restar', function (event) {
+        var div = $(this).parent("div.controles");
+        var input = $(div).find("input.input-cantidad");
+        var inputIdProducto = $(div).find("input.input-idProducto");
+        var inputIdPedido = $(div).find("input.input-idPedido");
+        var cantidad = parseInt($(input).val()) - 1;
+        if (cantidad >= 1) {
+            var idProducto = $(inputIdProducto).val();
+            var idPedido = $(inputIdPedido).val();
+
+            $(input).val(cantidad);
+            ActualizarPrecioParcial(idProducto, cantidad, idPedido);
+        }
+
+
+
+
+        obtenerValorParcial();
+    });
+
+    function ActualizarPrecioParcial(idProducto,cantidad,IdPedido) {
+
+        $.ajax({
+            url: "@Url.Content("~/Store/UpdatePartialPrice")",
+            type: "POST",
+            cache:true,
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({ cantidad: cantidad,idProducto: idProducto,idPedido:IdPedido }),
+            success: function (response) {
+                if (response.response) {
+
+                    $("#productos-seleccionados").empty();
+
+                    LlenarTabla()
+
+                } else if (response.response == 0) {
+
+                    alert("Producto agotado para esa cantidad")
+                }
+                else {
+                    console.log("El servidor arrojó un error")
+                }
+            },
+            error: function(){
+                console.log("error en la solicitud")
+            }
+
+        })
+    }
+
+    function EliminarPedidoParcial(id) {
+        $.ajax({
+            url: "@Url.Content("~/Store/DeletePartialOrder")",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({ id:id}),
+            success: function (response) {
+                if (response.response) {
+
+                    $("#productos-seleccionados").empty();
+
+                    LlenarTabla();
+
+                    contarCarrito();
+                    obtenerValorParcial();
+
+                } else {
+                    console.log("El servidor arrojó un error")
+                }
+            },
+            error: function () {
+                console.log("error en la solicitud")
+            }
+
+        })
+
+
+    }
+
+
+        function obtenerValorParcial() {
+            $.ajax({
+
+                url: "@Url.Content("~/Store/CalculateTotalPricePartial")",
+                type: "GET",
+                cache: true,
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response != 0) {
+
+                        console.log(response)
+                        $("#totalPagar").empty();
+                        $("#totalPagar").text(response);
+                    }
+                    else {
+                        $("#totalPagar").empty();
+                        $("#totalPagar").text("0");
+                        console.log(response)
+                    }
+
+                },
+                error: function () {
+                    console.log("No se pudo conectar con el servidor")
+                }
+
+            })
+        }
+
+    $("#ProcesarPago").submit(function (event) {
+        event.preventDefault();
+
+        var valorTotal = $("#totalPagar").text();
+        if (valorTotal != 0) {
+
+
+            swal({
+                title: "¿Desea realizar el pago de los productos seleccionados?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+
+                        var token = $('input[name="__RequestVerificationToken"]').val();
+                        var data = $(this).serialize();
+                        $.ajax({
+                            url: "@Url.Content("~/Store/ProcessPayment")",
+                            type: "POST",
+                            data: data,
+                            headers: { "RequestVerificationToken": token },
+                            success: function (response) {
+                                if (response.exito) {
+
+                                    $("#productos-seleccionados").empty();
+                                    $("#totalPagar").empty();
+                                    $("#totalPagar").text("0");
+
+                                    LlenarTabla();
+                                    contarCarrito();
+
+                                    swal("Su pedido se ha guardado exitosamente", {
+                                        icon: "success",
+                                    });
+
+                                } else {
+
+                                }
+                            },
+                            error: function () {
+                                console.log("no se pudo conectar con el servidor");
+                            }
+                        });
+
+
+                    }
+                });
+
+        } else {
+            alert("No tienes productos en el pedido");
+        }
+
+    });
+
+
+
+</script>
+
+
+
+
+

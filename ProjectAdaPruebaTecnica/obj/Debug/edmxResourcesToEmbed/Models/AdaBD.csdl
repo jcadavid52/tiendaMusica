@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BD_ADA_SAModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="BD_ADA_SAEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Pedido" EntityType="BD_ADA_SAModel.Pedido" />
+    <EntitySet Name="Producto" EntityType="BD_ADA_SAModel.Producto" />
+    <EntitySet Name="Roles" EntityType="BD_ADA_SAModel.Roles" />
+    <EntitySet Name="Transaccion" EntityType="BD_ADA_SAModel.Transaccion" />
+    <EntitySet Name="Usuario" EntityType="BD_ADA_SAModel.Usuario" />
+    <AssociationSet Name="Fk_ProductoPedido" Association="BD_ADA_SAModel.Fk_ProductoPedido">
+      <End Role="Producto" EntitySet="Producto" />
+      <End Role="Pedido" EntitySet="Pedido" />
+    </AssociationSet>
+    <AssociationSet Name="Fk_UsuarioPedido" Association="BD_ADA_SAModel.Fk_UsuarioPedido">
+      <End Role="Usuario" EntitySet="Usuario" />
+      <End Role="Pedido" EntitySet="Pedido" />
+    </AssociationSet>
+    <AssociationSet Name="Fk_Roles" Association="BD_ADA_SAModel.Fk_Roles">
+      <End Role="Roles" EntitySet="Roles" />
+      <End Role="Usuario" EntitySet="Usuario" />
+    </AssociationSet>
+    <AssociationSet Name="Fk_Usuario" Association="BD_ADA_SAModel.Fk_Usuario">
+      <End Role="Usuario" EntitySet="Usuario" />
+      <End Role="Transaccion" EntitySet="Transaccion" />
+    </AssociationSet>
+    <FunctionImport Name="SP_ADD_Transaction">
+      <Parameter Name="IdUsuario" Mode="In" Type="Int32" />
+    </FunctionImport>
+  </EntityContainer>
+  <EntityType Name="Pedido">
+    <Key>
+      <PropertyRef Name="IdPedido" />
+    </Key>
+    <Property Name="IdPedido" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ValorParcial" Type="Decimal" Precision="20" Scale="2" />
+    <Property Name="Estado" Type="Boolean" />
+    <Property Name="Cantidad" Type="Int32" Nullable="false" />
+    <Property Name="IdProducto" Type="Int32" Nullable="false" />
+    <Property Name="IdUsuario" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Producto" Relationship="BD_ADA_SAModel.Fk_ProductoPedido" FromRole="Pedido" ToRole="Producto" />
+    <NavigationProperty Name="Usuario" Relationship="BD_ADA_SAModel.Fk_UsuarioPedido" FromRole="Pedido" ToRole="Usuario" />
+  </EntityType>
+  <EntityType Name="Producto">
+    <Key>
+      <PropertyRef Name="IdProducto" />
+    </Key>
+    <Property Name="IdProducto" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Nombre" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Caracteristica" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="CantidadDisponible" Type="Int32" Nullable="false" />
+    <Property Name="Precio" Type="Decimal" Nullable="false" Precision="20" Scale="2" />
+    <Property Name="Descripcion" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="RutaImagen" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Pedido" Relationship="BD_ADA_SAModel.Fk_ProductoPedido" FromRole="Producto" ToRole="Pedido" />
+  </EntityType>
+  <EntityType Name="Roles">
+    <Key>
+      <PropertyRef Name="IdRol" />
+    </Key>
+    <Property Name="IdRol" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NombreRol" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Usuario" Relationship="BD_ADA_SAModel.Fk_Roles" FromRole="Roles" ToRole="Usuario" />
+  </EntityType>
+  <EntityType Name="Transaccion">
+    <Key>
+      <PropertyRef Name="IdTransaccion" />
+    </Key>
+    <Property Name="IdTransaccion" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FechaCompra" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="CantidadComprada" Type="Int32" Nullable="false" />
+    <Property Name="ValorCompra" Type="Int32" Nullable="false" />
+    <Property Name="IdUsuario" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Usuario" Relationship="BD_ADA_SAModel.Fk_Usuario" FromRole="Transaccion" ToRole="Usuario" />
+  </EntityType>
+  <EntityType Name="Usuario">
+    <Key>
+      <PropertyRef Name="IdUsuario" />
+    </Key>
+    <Property Name="IdUsuario" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Nombre" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Apellido" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Direccion" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Telefono" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="UsuarioAcceso" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="Identificacion" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Clave" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="IdRol" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Pedido" Relationship="BD_ADA_SAModel.Fk_UsuarioPedido" FromRole="Usuario" ToRole="Pedido" />
+    <NavigationProperty Name="Roles" Relationship="BD_ADA_SAModel.Fk_Roles" FromRole="Usuario" ToRole="Roles" />
+    <NavigationProperty Name="Transaccion" Relationship="BD_ADA_SAModel.Fk_Usuario" FromRole="Usuario" ToRole="Transaccion" />
+  </EntityType>
+  <Association Name="Fk_ProductoPedido">
+    <End Type="BD_ADA_SAModel.Producto" Role="Producto" Multiplicity="1" />
+    <End Type="BD_ADA_SAModel.Pedido" Role="Pedido" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Producto">
+        <PropertyRef Name="IdProducto" />
+      </Principal>
+      <Dependent Role="Pedido">
+        <PropertyRef Name="IdProducto" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Fk_UsuarioPedido">
+    <End Type="BD_ADA_SAModel.Usuario" Role="Usuario" Multiplicity="1" />
+    <End Type="BD_ADA_SAModel.Pedido" Role="Pedido" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Usuario">
+        <PropertyRef Name="IdUsuario" />
+      </Principal>
+      <Dependent Role="Pedido">
+        <PropertyRef Name="IdUsuario" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Fk_Roles">
+    <End Type="BD_ADA_SAModel.Roles" Role="Roles" Multiplicity="1" />
+    <End Type="BD_ADA_SAModel.Usuario" Role="Usuario" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Roles">
+        <PropertyRef Name="IdRol" />
+      </Principal>
+      <Dependent Role="Usuario">
+        <PropertyRef Name="IdRol" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Fk_Usuario">
+    <End Type="BD_ADA_SAModel.Usuario" Role="Usuario" Multiplicity="1" />
+    <End Type="BD_ADA_SAModel.Transaccion" Role="Transaccion" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Usuario">
+        <PropertyRef Name="IdUsuario" />
+      </Principal>
+      <Dependent Role="Transaccion">
+        <PropertyRef Name="IdUsuario" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

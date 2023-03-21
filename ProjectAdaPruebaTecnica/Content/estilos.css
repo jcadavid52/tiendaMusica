@@ -1,0 +1,48 @@
+﻿.seccion-detalle-producto
+{
+    border:solid black;
+    height:400px;
+    width:770px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-gap:20px;
+}
+.container-img {
+    
+    margin-top: 20px;
+    border-radius: 10px;
+}
+.info-product {
+    border: solid blue;
+    padding: 50px;
+    height: 400px;
+}
+.input-form-pedido {
+    border: solid yellow;
+    margin-top:40px;
+}
+.text-description-product {
+    border: solid yellow;
+    margin-top: 30px;
+}
+.button-add-order{
+    margin-top:80px;
+}
+.card-img-top {
+    border-radius: 10px;
+    border: solid #80817A;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.1s ease-in-out;
+}
+
+.card-img-top:hover {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+#img-produc {
+    border-radius: 10px;
+    height:300px;
+}
+.content-height {
+  
+}

@@ -1,0 +1,191 @@
+﻿@model List<ProjectAdaPruebaTecnica.Models.Producto>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button id="btn-close" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="card col-sm-6">
+
+                        <img src="..." class="img-fluid" alt="..." id="img-produc" >
+                    </div>
+
+                    <div class="card col-md-6">
+                        <div class="card-body">
+                            <form id="form-order">
+                                <h6 class="card-title" id="title-product"></h6>
+                                <h5 class="card-title" id="caracteristic"></h5>
+                                <h6 class="card-title text-success" id="price"></h6>
+                                <p class="card-text" id="text-description"></p>
+                                @Html.AntiForgeryToken()
+                                <input type="text" name="IdProducto" id="IdProducto" hidden />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="validationCustom05" class="form-label">Cantidad</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control" name="Cantidad" id="cantidad" required>
+                                    </div>
+                                </div>
+
+                                <div class="mt-5">
+                                    <button type="submit" class="btn btn-primary">Añadir a la cesta</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button id="btn-close2" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="me-5 mt-5">
+    <hr style="color:red;margin-left:30px;" />
+    <div class="row justify-content-center">
+        @foreach (var items in Model)
+        {
+
+
+            <div class="card col-md-6 m-2" style="width: 18rem;">
+                <div class="container-img">
+                    <img src="@Url.Content(items.RutaImagen)" class="card-img-top" alt="..." height="200" width="200">
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">@items.Nombre</h5>
+                    <p class="card-text">@items.Precio</p>
+                    <a href="javascript:abrirModalProducto(@items.IdProducto)" class="btn btn-primary">Ver detalle</a>
+                </div>
+            </div>
+
+
+
+
+
+        }
+    </div>
+    <hr style="color:red;margin-left:30px;" />
+</div>
+
+ @section scripts{
+
+    <script>
+        function abrirModalProducto(id) {
+
+            document.getElementById("IdProducto").value = id;
+             $.ajax({
+                    url: "@Url.Content("~/Store/DetailProduct/")" + id,
+                    type: "GET",
+                    data: null,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        if (response != null) {
+
+                            $("#title-product").empty(response.Nombre);
+                            $("#caracteristic").empty(response.Caracteristica);
+                            $("#price").empty("$" + response.Precio);
+                            $("#text-description").empty(response.Descripcion);
+
+                            $("#title-product").append(response.Nombre);
+                            $("#caracteristic").append(response.Caracteristica);
+                            $("#price").append("$" + response.Precio);
+                            $("#text-description").append(response.Descripcion);
+
+                            console.log(response.RutaImagen)
+                            
+                            var rutaRelativa = response.RutaImagen;
+                            var rutaAbsoluta = obtenerRutaAbsoluta(rutaRelativa);
+                            
+
+                            $("#img-produc").attr("src", rutaAbsoluta);
+
+                        } else {
+                            console.log("El servidor no arrojó datos");
+                        }
+                    },
+                    error: function () {
+                        console.log("Error no se pudo hacer la solicitud la servidor")
+                    }
+                });
+
+            $('#exampleModal').modal('show');
+        }
+
+        $("#form-order").submit(function (event) {
+            event.preventDefault();
+
+            var token = $('input[name="__RequestVerificationToken"]').val(); // Obtener el token antifalsificación
+            var data = $(this).serialize(); 
+
+            $.ajax({
+                url: "@Url.Action("AddOrder","Store")",
+                type: "POST",
+                data: data,
+                headers: { "RequestVerificationToken": token }, // Agrego el token antifalsificación en los encabezados
+                success: function (response) {
+                    if (response.status == 0) {
+                        alert("Los datos no llegaron correctamente, intenta nuevamente")
+                    } else if (response.status == 1) {
+                        alert("Producto no encontrado")
+                    }
+                    else if (response.status == 2) {
+                        alert("Producto agotado para esa cantidad")
+                    } else if (response.status == 3) {
+                        alert("Error al registrar la orden")
+                    }
+                    else if (response.status == 4) {
+                        alert("La cantidad debe ser mayor a 0")
+                    }
+                    else if (response.status == 5) {
+                        alert("Producto ya registrado en carrito")
+                    }
+                    else {
+                        alert("Se ha agregado correctamente a la sesta")
+
+                        contarCarrito();
+                        $("#cantidad").val("");
+                    }
+                },
+                error: function () {
+                   console.log("No se pudo conectar al servidor")
+                }
+            });
+        });
+
+        $("#btn-close").click(function () {
+            $("#cantidad").val("");
+        });
+
+        $("#btn-close2").click(function () {
+            $("#cantidad").val("");
+        });
+
+        function obtenerRutaAbsoluta(rutaRelativa) {
+            var rutaAbsoluta = rutaRelativa.replace('~/', location.origin + '/');
+            return rutaAbsoluta;
+        }
+
+    </script>
+
+ }

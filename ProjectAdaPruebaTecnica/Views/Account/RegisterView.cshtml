@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "RegisterView";
+    Layout = null;
+}
+<head>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+
+<body class="bg-primary">
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7">
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Crea una cuenta</h3></div>
+                                <div class="card-body">
+                                    <form id="formRegisterUser">
+                                        @Html.AntiForgeryToken()
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" name="Nombre" type="text" placeholder="Ingrese su nombre" required />
+                                                    <label for="inputFirstName">Nombre</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input class="form-control" name="Apellido" type="text" placeholder="Ingrese su apellido" required />
+                                                    <label for="inputLastName">Apellido</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" name="Direccion" type="text" placeholder="Ingrese su dirección" required />
+                                                    <label for="inputLastName">Dirección</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input class="form-control" name="Telefono" type="text" placeholder="Ingrese su teléfono" required />
+                                                    <label for="inputLastName">Teléfono</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" name="UsuarioAcceso" type="text" placeholder="Crea un usuario" required />
+                                                    <label for="inputLastName">Usuario</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input class="form-control" name="Identificacion" type="text" placeholder="Ingrese su identificación" required />
+                                                    <label for="inputLastName">Identificación</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" name="Clave1" type="password" placeholder="Crea una clave" required />
+                                                    <label for="inputPassword">Password</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" name="clave2" type="password" placeholder="Confirme clave" required />
+                                                    <label for="inputPasswordConfirm">Confirme Clave</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 mb-0">
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary">Registrarse</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+
+
+    <script>
+        $("#formRegisterUser").submit(function (event) {
+            event.preventDefault(); // Detener la acción predeterminada del formulario
+
+            var token = $('input[name="__RequestVerificationToken"]').val(); // Obtener el token antifalsificación
+            var data = $(this).serialize(); // Serializar el formulario para enviarlo como datos
+            console.log(token)
+            $.ajax({
+                url: "@Url.Content("~/Account/RegisterUser")",
+                type: "POST",
+                data: data,
+                headers: { "RequestVerificationToken": token }, // Agregar el token antifalsificación en los encabezados
+                success: function (response) {
+                    if (response.respuesta == 0) {
+                        alert("Campos nulos, intenta nuevamente")
+                    } else if (response.respuesta == 1) {
+                        alert("Las claves no son iguales, verifica nuevamente")
+
+                    } else if (response.respuesta == 2) {
+                        alert("Usuario ya registrado en la base de datos")
+                    } else if (response.respuesta == 3) {
+                        alert("Error al registrar, intenta nuevamente")
+                    } else{
+                        alert("Registrado con éxito");
+                         window.location.href = "@Url.Action("AutenticationView","Account")";
+                    }
+                },
+                error: function () {
+                    alert("Error al procesar la solcitud")
+                }
+            });
+        });
+    </script>
+
+</body>

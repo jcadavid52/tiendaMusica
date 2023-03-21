@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div class="card-body">
+                <table id="tableTransactions" class="table table-primary">
+                    <thead class="table table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Fecha transaccion</th>
+                            <th>Cantidad de la compra</th>
+                            <th>Valor total</th>
+                            <th>Nombre cliente</th>
+                            <th>Apellido cliente</th>
+                            <th>Teléfono</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+</main>
+</div>
+
+@section scripts{
+    
+    <script>
+
+         $(document).ready(function () {
+
+             $("#tableTransactions").DataTable({
+
+                     "ajax": {
+                        "url": "@Url.Content("~/Home/GetTransactions")",
+                        "cache":"true",
+                        "type": "GET",
+                        "datatype": "json"
+
+                      },
+                      "data": null,
+
+                       "columns": [
+                           { "data": "IdTransaccion"},
+                           {
+                               "data": "FechaCompra",
+                               "render": function (data, type, full, meta) {
+
+                                   var date = new Date(parseInt(data.substr(6)));
+                                   return date.toLocaleDateString();
+                               }
+                           },
+                           { "data": "CantidadComprada" },
+                           { "data": "ValorCompra" },
+                           { "data": "Nombre" },
+                           { "data": "Apellido" },
+                           { "data": "Telefono" }
+
+
+                       ],
+
+                    
+                    "pageLength": 5,
+                    "order": [[0, "desc"]]
+
+                });
+
+
+            });
+
+
+
+
+    </script>
+    
+}

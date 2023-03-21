@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7a04b2f51a564752bba4af352e663c30" Name="Diagram1">
+        <EntityTypeShape EntityType="BD_ADA_SAModel.Pedido" Width="1.5" PointX="5.25" PointY="2.5" />
+        <EntityTypeShape EntityType="BD_ADA_SAModel.Producto" Width="1.5" PointX="3" PointY="7.5" />
+        <EntityTypeShape EntityType="BD_ADA_SAModel.Roles" Width="1.5" PointX="0.75" PointY="3" />
+        <EntityTypeShape EntityType="BD_ADA_SAModel.Transaccion" Width="1.5" PointX="5.25" PointY="6" />
+        <EntityTypeShape EntityType="BD_ADA_SAModel.Usuario" Width="1.5" PointX="3" PointY="2.125" />
+        <AssociationConnector Association="BD_ADA_SAModel.Fk_ProductoPedido" />
+        <AssociationConnector Association="BD_ADA_SAModel.Fk_UsuarioPedido" />
+        <AssociationConnector Association="BD_ADA_SAModel.Fk_Roles" />
+        <AssociationConnector Association="BD_ADA_SAModel.Fk_Usuario" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31229.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectAdaPruebaTecnica", "ProjectAdaPruebaTecnica\ProjectAdaPruebaTecnica.csproj", "{AB066C32-6A96-4715-9F18-129001C39C4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAdaProject", "ApiAdaProject\ApiAdaProject.csproj", "{D3933601-34E7-4778-96AA-B00988C6596E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB066C32-6A96-4715-9F18-129001C39C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB066C32-6A96-4715-9F18-129001C39C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB066C32-6A96-4715-9F18-129001C39C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB066C32-6A96-4715-9F18-129001C39C4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3933601-34E7-4778-96AA-B00988C6596E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3933601-34E7-4778-96AA-B00988C6596E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3933601-34E7-4778-96AA-B00988C6596E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3933601-34E7-4778-96AA-B00988C6596E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {284F4E34-C78C-460C-935A-C92A07CC9493}
+	EndGlobalSection
+EndGlobal

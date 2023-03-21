@@ -1,0 +1,224 @@
+﻿
+@{
+    ViewBag.Title = "ProductsAvailableView";
+}
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div class="card-body">
+                <table id="tableProducts" class="table table-primary">
+                    <thead class="table table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Característica</th>
+                            <th>Cantidad disponible</th>
+                            <th>Precio</th>
+                            <th>Descripción</th>
+                            <th>Ruta Imagen</th>
+                            <th>Acción</th>
+                           
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="editar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modificar producto</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="form-editar-producto">
+                                    @Html.AntiForgeryToken()
+
+                                    <div class="mb-3">
+                                        
+                                        <input type="text" class="form-control" id="text-IdProducto" name="IdProducto" aria-describedby="emailHelp" hidden>
+
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="mb-3 col-md-6">
+                                            <label for="exampleInputEmail1" class="form-label">Nombre Producto</label>
+                                            <input type="text" class="form-control" id="text-Nombre" name="Nombre" aria-describedby="emailHelp" required>
+
+                                        </div>
+
+                                        <div class="mb-3 col-md-6">
+                                            <label for="exampleInputEmail1" class="form-label">Característica</label>
+                                            <input type="text" class="form-control" id="text-Caracteristica" name="Caracteristica" aria-describedby="emailHelp" required>
+
+                                        </div>
+
+                                        <div class="mb-3 col-md-6">
+                                            <label for="exampleInputEmail1" class="form-label">Cantidad Disponible</label>
+                                            <input type="text" class="form-control" id="text-CantidadDisponible" name="CantidadDisponible" aria-describedby="emailHelp" required>
+
+                                        </div>
+
+                                        <div class="mb-3 col-md-6">
+                                            <label for="exampleInputEmail1" class="form-label">Precio</label>
+                                            <input type="text" class="form-control" id="text-Precio" name="Precio" aria-describedby="emailHelp" required>
+
+                                        </div>
+
+                                        <div class="mb-3 col-md-6">
+                                            <label for="exampleInputEmail1" class="form-label">Descripción</label>
+                                            <input type="text" class="form-control" id="text-Descripcion" name="Descripcion" aria-describedby="emailHelp" required>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        
+                                        <input type="text" class="form-control" id="text-RutaImagen" name="RutaImagen" aria-describedby="emailHelp" hidden>
+
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Editar</button>
+
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+@section scripts{
+
+    <script>
+
+         $(document).ready(function () {
+
+             $("#tableProducts").DataTable({
+
+                     "ajax": {
+                        "url": "@Url.Content("~/Home/ProductListApi")",
+                        "cache":"true",
+                        "type": "GET",
+                        "datatype": "json"
+
+                      },
+                      "data": null,
+
+                       "columns": [
+                           { "data": "IdProducto"},
+                           { "data": "Nombre"},
+                           { "data": "Caracteristica" },
+                           { "data": "CantidadDisponible" },
+                           { "data": "Precio" },
+                           { "data": "Descripcion" },
+                           {
+                               "data": "RutaImagen",
+                               "render": function (data, type, full, meta) {
+
+                                  var ruta = obtenerRutaAbsoluta(data)
+
+                                   return '<img src="' + ruta+'" height="100" width="100" style="border-radius:50%;""/>';
+                               }
+                           }
+
+
+                       ],
+
+                 "columnDefs": [{
+                     targets: 7,
+                     render: function (data, type, row, meta) {
+                         return '<button class="miBoton btn btn-primary btn-circle"><i class="fa fa-list" style="font-size:15px;"></i></button>';
+
+                     },
+                  
+                 }],
+
+                 
+
+                    "pageLength": 5,
+                    "order": [[0, "desc"]]
+
+             });
+
+             $('#tableProducts').on('click', '.miBoton', function () {
+                 var fila = $(this).closest('tr');
+                 var datosFila = $('#tableProducts').DataTable().row(fila).data();
+
+                 llenarInputModalProducto(datosFila);
+             });
+
+
+         });
+
+        function llenarInputModalProducto(datosFila) {
+
+
+            $("#text-IdProducto").val(datosFila.IdProducto);
+            $("#text-Nombre").val(datosFila.Nombre);
+            $("#text-Caracteristica").val(datosFila.Caracteristica);
+            $("#text-CantidadDisponible").val(datosFila.CantidadDisponible);
+            $("#text-Precio").val(datosFila.Precio);
+            $("#text-Descripcion").val(datosFila.Descripcion);
+            $("#text-RutaImagen").val(datosFila.RutaImagen);
+
+
+            abrirModalEditarProducto();
+        }
+
+        function abrirModalEditarProducto() {
+            $('#editar').modal('show');
+        }
+
+        $("#form-editar-producto").submit(function (event) {
+            event.preventDefault(); 
+
+            var token = $('input[name="__RequestVerificationToken"]').val(); // Obtener el token antifalsificación
+            var data = $(this).serialize(); // Serializar el formulario para enviarlo como datos
+
+            $.ajax({
+                url: "@Url.Content("~/Home/EditProductApi")",
+                type: "POST",
+                data: data,
+                headers: { "RequestVerificationToken": token }, // Agregar el token antifalsificación en los encabezados
+                success: function (response) {
+                    if (response.status == 0) {
+
+                        alert("Alguno de los datos llegó nulo al servidor, intenta nuevamente")
+
+                    } else if (response.status == 1) {
+                        alert("No se pudo actualizar el producto, intenta nuevamente")
+                    } else {
+                        alert("Producto modficado exitosamente");
+
+                        var table = $('#tableProducts').DataTable();
+
+                        table.ajax.reload(null, false);
+                    }
+                },
+                error: function () {
+                    console.log("No se pudo conectar con el servidor")
+                }
+            });
+        });
+
+        function obtenerRutaAbsoluta(rutaRelativa) {
+            var rutaAbsoluta = rutaRelativa.replace('~/', location.origin + '/');
+            return rutaAbsoluta;
+        }
+
+
+    </script>
+
+}

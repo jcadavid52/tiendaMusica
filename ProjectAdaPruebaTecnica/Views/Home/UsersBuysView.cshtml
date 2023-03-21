@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "UsersBuysView";
+}
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div class="card-body">
+                <table id="tableUsersBuys" class="table table-primary">
+                    <thead class="table table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Direccion</th>
+                            <th>Telefono</th>
+                            <th>Usuario Acceso</th>
+                            <th>Identificacion</th>
+                            <th>Clave</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+@section scripts{
+
+    <script>
+
+         $(document).ready(function () {
+
+             $("#tableUsersBuys").DataTable({
+
+                     "ajax": {
+                        "url": "@Url.Content("~/Home/UserBuyListApi")",
+                        "cache":"true",
+                        "type": "GET",
+                        "datatype": "json"
+
+                      },
+                      "data": null,
+
+                       "columns": [
+                           { "data": "IdUsuario"},
+                           { "data": "Nombre"},
+                           { "data": "Apellido" },
+                           { "data": "Direccion" },
+                           { "data": "Telefono" },
+                           { "data": "UsuarioAcceso" },
+                           { "data": "Identificacion" },
+                           { "data": "Clave" },
+                          
+                               
+
+                       ],
+
+
+                    "pageLength": 5
+
+             });
+
+
+         });
+
+       
+
+    </script>
+
+}
+
